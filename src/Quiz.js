@@ -1,45 +1,57 @@
-import React from 'react'
-import axios from 'axios'
-import CountDownTimer from './CountDownTimer'
-import { useEffect,useState } from 'react'
-const Quiz = () => {
-    const hoursMinSecs = {hours:0, minutes: 0, seconds: 10};
-    const [questions,setQuestions] = useState(0);
-    const [hide,setHide] = useState(false);
-    const [stop,setStop] = useState(false);
+import React from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import Question from "./Question";
+import "./styles/mcq.css";
+import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import { connect } from "react-redux";
+import { setDisplay } from "./store/actions/index";
+import { bindActionCreators } from "redux";
 
-    
-    useEffect(()=>{
-        var config = {
-            method: 'get',
-            url: 'http://localhost:1337/Quizzes',
-            headers: { }
-          };
-          
-          axios(config)
-          .then(function (response) {
-            console.log(JSON.stringify(response.data));
-            setQuestions(response.data);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-    },[])
-    
-    return (
-        <>
-        <div style={{display:hide ? "none":"block"}}>
-            Question : {questions[0]?.Question_Answer? questions[0]?.Question_Answer[0]?.Q:""}
-            <div>A: {questions[0]?.Question_Answer[0]?.O?.A}</div>
-            <div>B: {questions[0]?.Question_Answer[0]?.O?.B}</div>
-            <div>C: {questions[0]?.Question_Answer[0]?.O?.C}</div>
-            <button onClick={()=>{setStop(true)}}>Stop here</button>
-        </div>
-        <div>
-        <CountDownTimer hoursMinSecs={hoursMinSecs} stopper = {stop}/>
-        </div>
-        </>
-    )
+function mapStateToProps(state) {
+  return {
+    Questions: state.quizApp.questionsAndAnswers,
+    visible: state.display.show,
+    pause: state.display.pause,
+    key: state.display.key,
+  };
 }
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      setDisplay: setDisplay,
+    },
+    dispatch
+  );
+}
+const Quiz = (props) => {
+  useEffect(() => {
+    props.setDisplay();
+  }, []);
 
-export default Quiz
+  return (
+    <>
+      <div style={{ display: props.visible ? "block" : "none" }}>
+        <div>
+          <div className="time">
+            <CountdownCircleTimer
+              isPlaying={props.pause}
+              key={props.key}
+              duration={10}
+              colors={[
+                ["#004777", 0.33],
+                ["#F7B801", 0.33],
+                ["#A30000", 0.33],
+              ]}
+            >
+              {({ remainingTime }) => remainingTime}
+            </CountdownCircleTimer>
+          </div>
+        </div>
+        <Question data={props.Questions} type="mcq" />
+      </div>
+    </>
+  );
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Quiz);

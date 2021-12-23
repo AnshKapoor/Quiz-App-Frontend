@@ -1,0 +1,12 @@
+export const START_QUIZ = "start_quiz";
+export const NEW_ROUND = "new_round";
+export const ANSWER_QUESTION = "answer_question";
+export const NEW_QUIZ = "new_quiz";
+export const FETCH_REQUEST = "fetch_request";
+export const FETCH_SUCCESS = "fetch_success";
+export const FETCH_ERROR = "fetch_error";
+export const HIDE_UI = "hide_ui";
+export const SHOW_UI = "show_ui";
+export const CHANGE_PAUSE = "toggle_pause";
+export const INCREMENT = "increment";
+export const INCREMENT_KEY = "increment_key";
